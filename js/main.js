@@ -1,4 +1,5 @@
-var autoCompleteOptions = {
+var lat, long,
+autoCompleteOptions = {
     url: 'https://loyolalawtech.org/project/legal.json',
     getValue: 'name',
     list: {
@@ -58,15 +59,16 @@ init = function() {
     $('#problem').focus();
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            var lat = position.coords.latitude,
-                long = position.coords.longitude;
+            lat = position.coords.latitude,
+            long = position.coords.longitude;
             console.log(lat + ' ' + long);
             $('#mapgeo').locationpicker({ 
                 location: {
                     latitude: lat,
                     longitude: long 
                 },
-                radius: 300,
+                radius: 3500,
+                zoom: 10,
                 scrollwheel: false,
                 oninitialized: function(component){
                     console.log('initialized');
@@ -76,6 +78,9 @@ init = function() {
                 onchanged: function(currentLocation, radius, isMarkerDropped){
                     //nothing for now
                     console.log('changed');
+                    var addressComponents = $(this).locationpicker('map').location.addressComponents;
+                    console.log(addressComponents);
+
                 }
             });
 
