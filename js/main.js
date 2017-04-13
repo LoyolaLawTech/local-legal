@@ -20,9 +20,19 @@ autoCompleteOptions = {
 },
 
 getAgencies = function (location,problemType){
-
-
-
+    $.ajax({
+            url:'https://loyolalawtech.org/project/agencies.json',
+            method: 'post',
+            data: {'lat': lat, 'long': long, 'problem_type': problemType}
+        })
+        .fail(function(err){
+            console.log(err);
+        })
+        .done(function(data){
+            console.log(data);
+            $('#results').append(listTemplate(data));
+            $('#row4').show();
+        });
 },
 
 geoError = function(err){
@@ -44,8 +54,16 @@ geoError = function(err){
 },
 
 listTemplate = function (data){
-    return '<li>' + data.name + 'li';
+    var page = '';
+    data.forEach(function(d){
+        page += '<a href="#" class="list-group-item ">' + 
+           '<h4 class="list-group-item-heading">' + d.name + '</h4>' +
+           '<p class="list-group-item-text">' + d.address + '</p>' + 
+           '<p class="list-group-item-text">' + d.city + ',' + d.state + '</p>' + 
+           '</a>';
+    });
 
+    return page;
 },
 
 unitTemplate = function (data){
@@ -89,6 +107,15 @@ init = function() {
     //Switch to user-inputted position
     console.log('Geolocation is not Supported for this browser/OS');
   }
+
+    //Initialize listeners
+    $('#yes').on('click', function(){
+        console.log('yes'); 
+        getAgencies();
+    });
+    $('#no').on('click', function(){
+        console.log('no'); 
+    });
 };
 
 
