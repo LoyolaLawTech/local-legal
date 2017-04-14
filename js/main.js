@@ -1,17 +1,21 @@
 var lat, long,
+setTransition = function(closer, target){
+    $(closer).fadeOut();
+    console.log('offset:' + $(target).offset().top);
+    $('html,body').animate({scrollTop: $(target).offset().top - 340});
+    //$(target).css('visibility','visible').hide().fadeIn('slow');
+    $(closer).fadeOut();
+    $(target).fadeIn();
+},
+
 autoCompleteOptions = {
     url: 'https://loyolalawtech.org/project/legal.json',
     getValue: 'name',
     list: {
         //when the list goes away is selected, then do this:
         onHideListEvent: function(){
-            $('#row1').fadeOut();
             $('#problem-chsn').text($('#problem').val());
-            $('#row2').fadeIn('slow', function(){
-                $('html,body').animate({scrollTop: $('#row2').offset().top});
-
-                $('#row3').css('visibility','visible').hide().fadeIn('slow');
-            });
+            setTransition('#row1','#row2');
         },
         match: {
             enabled: true
@@ -29,9 +33,14 @@ getAgencies = function (location,problemType){
             console.log(err);
         })
         .done(function(data){
-            console.log(data);
-            $('#results').append(listTemplate(data));
+            if (data.length > 0){
+                $('#result-header').text('These agencies may be able to help:');
+                $('#results').append(listTemplate(data));
+            } else {
+                $('#result-header').text('Sorry, there is no help available in your area.');
+            }
             $('#row4').show();
+            setTransition('#row2','#row4');
         });
 },
 
@@ -92,6 +101,10 @@ init = function() {
                     console.log('initialized');
                     console.log($(component).locationpicker('map').location.addressComponents.city);
                     $('#geo_city').text($(component).locationpicker('map').location.addressComponents.city);
+                    //The following must be done because the map has to be set to "display:block" in order to
+                    //initialize. So, we set visibility to hidden in css, then set to display:none, the change
+                    //visibility.
+                    $('#row2').hide().css('visibility','visible');
                 },
                 onchanged: function(currentLocation, radius, isMarkerDropped){
                     //nothing for now
@@ -110,7 +123,6 @@ init = function() {
 
     //Initialize listeners
     $('#yes').on('click', function(){
-        console.log('yes'); 
         getAgencies();
     });
     $('#no').on('click', function(){

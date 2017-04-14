@@ -96,15 +96,13 @@ textarea {
    ========================================================================== */
 body { padding-top: 70px; }
 
-#row2, #row4 {
+#row4, #row3 {
     display:none;
 }
 
-#row3 {
+#row2 {
     visibility:hidden;
 }
-
-
 
 
 
