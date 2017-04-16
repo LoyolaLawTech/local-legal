@@ -168,7 +168,7 @@ init = function() {
     });
     $('#item').on('click', '#start-over', function(){
         $('#problem').val('');
-        $('#results').val('');
+        $('#results').html('');
         setTransition('#row5','#row1'); 
     
     });
