@@ -63,21 +63,33 @@ geoError = function(err){
 },
 
 listTemplate = function (data){
-    var page = '';
+    var list = '';
     data.forEach(function(d){
-        page += '<a href="#" class="list-group-item ">' + 
+        list += '<a href="#" class="list-group-item" data-id="' +  d.id + '">' + 
            '<h4 class="list-group-item-heading">' + d.name + '</h4>' +
            '<p class="list-group-item-text">' + d.address + '</p>' + 
            '<p class="list-group-item-text">' + d.city + ',' + d.state + '</p>' + 
            '</a>';
     });
 
-    return page;
+    return list;
 },
 
-unitTemplate = function (data){
-    return '<li>' + data.name + 'li';
-
+pageTemplate = function (data){
+    var page = '<h1>' + data.name + '</h1>' + 
+      '<address>' + data.address + '<br />' +
+      data.city + ', ' + data.state + ' ' + data.zip + '<br />' +
+      '<a href="tel:' + data.phone + '">' + data.phone + '</a><br />' +
+      '<a  href="' + data.website + '">' + data.website + '</a><br />' +
+      '</address>' +
+      '<br /><br />' +
+      '<div class="input-group">' + 
+        '<div class= "input-group-btn">' + 
+                '<input type="button" class="btn btn-default" value="Go Back" id="go-back">' + 
+                '<input type="button" class="btn btn-default" value="Start Over" id="start-over">' + 
+            '</div>' +
+       '</div>';
+    return page;
 },
 
 
@@ -127,6 +139,38 @@ init = function() {
     });
     $('#no').on('click', function(){
         console.log('no'); 
+    });
+    $('#results').on('click', '.list-group-item', function(){
+        var recordId = Number($(this).attr('data-id')); 
+        //This is a mock query; we will presumably make a request for 
+        //to a script on the server, sending the record id
+        $.ajax({
+                url:'https://loyolalawtech.org/project/agencies.json',
+                method: 'post',
+                data: {'id': recordId}
+            })
+            .fail(function(err){
+                console.log(err);
+            })
+            .done(function(data){
+                //Will be replaced:
+                data.forEach(function(d){
+                    if (d.id === recordId){
+                        $('#item').html(pageTemplate(d)).show();
+                    }
+                });
+                setTransition('#row4','#row5');
+            });
+        });
+    $('#item').on('click', '#go-back', function(){
+        setTransition('#row5','#row4'); 
+    
+    });
+    $('#item').on('click', '#start-over', function(){
+        $('#problem').val('');
+        $('#results').val('');
+        setTransition('#row5','#row1'); 
+    
     });
 };
 
